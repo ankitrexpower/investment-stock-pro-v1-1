@@ -1,30 +1,12 @@
-<!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>INVESTMENT STOCK PRO V1.1</title>
-<link rel="manifest" href="manifest.json">
-<style>
-:root{--bg:#07111f;--card:#101a2e;--line:#26344d;--txt:#f5f7fb;--muted:#9da8bc;--green:#22c55e;--yellow:#facc15}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--txt);font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;padding:20px}.title{font-size:28px;font-weight:800}.sub{color:var(--muted);margin-top:6px}.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:18px;margin-top:18px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.num{font-size:28px;font-weight:800}.lbl{color:var(--muted)}button{width:100%;border:0;border-radius:14px;padding:15px;font-weight:800;background:var(--green);color:#07111f;font-size:16px}.tabs{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:16px}.tab{padding:14px;border:1px solid var(--line);border-radius:14px;text-align:center;font-weight:800}.tab.active{background:#1d2a40}table{width:100%;border-collapse:collapse;margin-top:10px}th,td{padding:12px;border-bottom:1px solid var(--line);text-align:left}th{color:var(--muted)}.badge{background:#554a12;color:var(--yellow);border-radius:999px;padding:6px 10px;font-weight:800}.err{color:#f87171}.small{font-size:13px;color:var(--muted)}@media(max-width:600px){.title{font-size:24px}.grid{grid-template-columns:1fr 1fr}body{padding:14px}}
-</style>
-</head>
-<body>
-<div class="title">INVESTMENT STOCK PRO V1.1</div>
-<div class="sub">FII+DII ≥ 5% • D/W/M • Close &gt; SMA121 • CCI ≤ -192</div>
-<div class="card">
-<button onclick="scan()">Live Scan</button>
-<div id="msg" class="small" style="margin-top:12px">Backend URL set in app.js</div>
-</div>
-<div class="grid">
-<div class="card"><div class="num" id="total">0</div><div class="lbl">Total Stocks</div></div>
-<div class="card"><div class="num" id="qualified">0</div><div class="lbl">FII+DII ≥5%</div></div>
-<div class="card"><div class="num" id="setup">0</div><div class="lbl">Total Setup</div></div>
-<div class="card"><div class="num" id="last">--</div><div class="lbl">Last Scan</div></div>
-</div>
-<div class="tabs"><div class="tab active" onclick="show('D',this)">Daily</div><div class="tab" onclick="show('W',this)">Weekly</div><div class="tab" onclick="show('M',this)">Monthly</div></div>
-<div class="card"><table><thead><tr><th>Stock</th><th>FII+DII</th><th>CCI</th><th>Status</th></tr></thead><tbody id="rows"><tr><td colspan="4">Live Scan dabao.</td></tr></tbody></table></div>
-<script src="app.js"></script>
-</body>
-</html>
+<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><title>INVESTMENT STOCK PRO V2.0</title><style>
+body{font-family:Arial;background:#07111f;color:#fff;margin:0;padding:18px}.card{background:#101b2d;border:1px solid #26354f;border-radius:16px;padding:16px;margin:14px 0}.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.kpi{font-size:28px;font-weight:700}.muted{color:#9aa7bb}.btn{width:100%;padding:15px;border:0;border-radius:14px;background:#22c55e;font-weight:700;font-size:16px}table{width:100%;border-collapse:collapse}td,th{padding:10px;border-bottom:1px solid #26354f;text-align:left}.badge{background:#7a6200;color:#ffe66b;padding:6px 10px;border-radius:20px;font-weight:700}.small{font-size:12px}</style></head><body>
+<h1>INVESTMENT STOCK PRO V2.0</h1><div class="muted">FII+DII ≥ 5% • D/W/M • Close &gt; SMA121 • CCI ≤ -192</div>
+<div class="card"><button class="btn" onclick="sampleScan()">Run Sample Live Scan</button><p class="muted small">CSV upload columns: Stock,FII,DII</p><input type="file" id="csv" accept=".csv"><button class="btn" style="margin-top:10px" onclick="uploadScan()">Upload CSV & Scan</button></div>
+<div class="grid"><div class="card"><div class="kpi" id="total">0</div><div class="muted">Total Stocks</div></div><div class="card"><div class="kpi" id="qualified">0</div><div class="muted">FII+DII ≥5%</div></div><div class="card"><div class="kpi" id="setup">0</div><div class="muted">Total Setup</div></div><div class="card"><div class="kpi" id="time">--</div><div class="muted">Last Scan</div></div></div>
+<div class="card"><table><thead><tr><th>Stock</th><th>TF</th><th>FII+DII</th><th>CCI</th><th>Status</th></tr></thead><tbody id="rows"><tr><td colspan="5" class="muted">Run scan karo.</td></tr></tbody></table></div>
+<script>
+const API = location.origin;
+function draw(data){document.getElementById('total').textContent=data.total_stocks||0;document.getElementById('qualified').textContent=data.qualified_stocks||0;document.getElementById('setup').textContent=data.total_setup||0;document.getElementById('time').textContent=new Date().toLocaleTimeString();let rows=data.setups||[];document.getElementById('rows').innerHTML=rows.length?rows.map(r=>`<tr><td><b>${r.stock}</b></td><td>${r.tf}</td><td>${r.total_holding}%</td><td>${r.cci}</td><td><span class="badge">SETUP</span></td></tr>`).join(''):'<tr><td colspan="5" class="muted">No setup found.</td></tr>'}
+async function sampleScan(){document.getElementById('rows').innerHTML='<tr><td colspan="5">Scanning...</td></tr>';draw(await (await fetch(API+'/sample-scan')).json())}
+async function uploadScan(){let f=document.getElementById('csv').files[0];if(!f){alert('CSV select karo');return}let fd=new FormData();fd.append('file',f);draw(await (await fetch(API+'/scan-csv',{method:'POST',body:fd})).json())}
+</script></body></html>

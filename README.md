@@ -1,19 +1,17 @@
-# INVESTMENT STOCK PRO V1.1 Hosting Ready
+# INVESTMENT STOCK PRO V2.0 REAL
 
-V1.1 rules:
+Rules:
 - FII + DII >= 5%
-- Daily / Weekly / Monthly scan
+- Daily/Weekly/Monthly scan
 - Close > SMA121
 - CCI(20) <= -192
 - SETUP only
 
-## Frontend hosting
-Upload `frontend` folder to Netlify / Cloudflare Pages.
+Render commands:
+Build: pip install -r requirements.txt
+Start: uvicorn main:app --host 0.0.0.0 --port $PORT
 
-## Backend hosting
-Upload `backend` folder to Render.
-Run command:
-`pip install -r requirements.txt && uvicorn main:app --host 0.0.0.0 --port $PORT`
+Open UI:
+https://YOUR-RENDER-URL.onrender.com/app
 
-## Important
-`backend/data_provider.py` currently has sample provider + price logic skeleton. For real automatic FII/DII data, connect a paid/free data API in `get_holdings()`.
+Note: FII/DII holding input is CSV/API-ready. Price history uses yfinance.
